@@ -10,16 +10,16 @@ import Nodemailer from "next-auth/providers/nodemailer"
 
 export const providers: Provider[] = [Google({
   profile(profile) {
-    return { role: profile.role ?? "user", ...profile };
+    return { role: profile.role ?? "user", teams: profile.teams ?? [], ...profile };
   },
   allowDangerousEmailAccountLinking: true
 }), GitHub({
   profile(profile) {
-    return { role: profile.role ?? "user", ...profile };
+    return { role: profile.role ?? "user", teams: profile.teams ?? [], ...profile };
   }
 }), Discord({
   profile(profile) {
-    return { role: profile.role ?? "user", ...profile };
+    return { role: profile.role ?? "user", teams: profile.teams ?? [], ...profile };
   }
 }),]
 
@@ -31,6 +31,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     session({ session, user }) {
       session.user.role = user.role
+      session.user.teams = user.teams
       return session
   },
 }})
