@@ -1,4 +1,3 @@
-import { auth } from "../../../auth";
 import Hero from "@/components/landing/Hero";
 import FeatureSection from "@/components/landing/FeatureSection";
 import { TracingBeam } from "@/components/ui/tracing-beam";
