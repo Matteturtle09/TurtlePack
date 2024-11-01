@@ -1,6 +1,6 @@
 # TurtlePack
 App starter for nextjs apps.
-It has some features
+It has some essential features already implemented, because the rest depends on the project.
 ## Features
 - Site Structure
     - [x] Landing Page
