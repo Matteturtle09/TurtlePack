@@ -1,9 +1,9 @@
 # TurtlePack
-App layout for nextjs.
-
+App starter for nextjs apps.
+It has some features
 ## Features
 - Site Structure
     - [x] Landing Page
     - [x] Custom Auth Pages
     - [ ] Dashboard Pages
-- Authentication with Next-auth and MongoDB
+- Authentication with Auth.js and MongoDB
