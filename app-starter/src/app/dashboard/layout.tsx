@@ -45,6 +45,10 @@ export default async function DashboardLayout({
     redirect('/');
   }
 
+  if (session?.user.teams.length === 0) {
+    redirect('/on-boarding');
+  }
+
   return (
     <div className="">
       <DashboardSideBar data={data}>{children}</DashboardSideBar>
