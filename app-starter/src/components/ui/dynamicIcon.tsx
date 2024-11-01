@@ -1,5 +1,5 @@
-import * as Icons from "react-icons/fa";
-import { IconType } from "react-icons";
+import * as Icons from 'react-icons/fa';
+import { IconType } from 'react-icons';
 
 interface DynamicIconProps {
   name: keyof typeof Icons;

@@ -1,10 +1,10 @@
-"use client";
-import * as React from "react";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import ThemeSwitch from "../ui/themeSwitch";
-import AuthButton from "../auth/AuthButton";
+'use client';
+import * as React from 'react';
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import ThemeSwitch from '../ui/themeSwitch';
+import AuthButton from '../auth/AuthButton';
 
 type NavItems = { title: string; href: string }[];
 
@@ -16,7 +16,7 @@ const Navbar = ({ navItems }: NavbarProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <nav className="fixed sticky z-50 top-0 w-full shadow-sm bg-transparent bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10">
+    <nav className="fixed sticky top-0 z-50 w-full bg-transparent bg-opacity-10 bg-clip-padding shadow-sm backdrop-blur-sm backdrop-filter">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
@@ -54,8 +54,8 @@ const Navbar = ({ navItems }: NavbarProps) => {
                       </React.Fragment>
                     ))}
                     <div className="flex w-full items-center justify-center space-x-4">
-                      {" "}
-                      <AuthButton/>
+                      {' '}
+                      <AuthButton />
                       <ThemeSwitch />
                     </div>
                   </div>
@@ -63,9 +63,9 @@ const Navbar = ({ navItems }: NavbarProps) => {
               </SheetContent>
             </Sheet>
           </div>
-          <div className="hidden md:flex space-x-4 items-center">
+          <div className="hidden items-center space-x-4 md:flex">
             <ThemeSwitch />
-            <AuthButton/>
+            <AuthButton />
           </div>
         </div>
       </div>

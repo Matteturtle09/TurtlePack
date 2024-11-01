@@ -1,29 +1,19 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   Check,
   ChevronsUpDown,
   GalleryVerticalEnd,
   Search,
-} from "lucide-react";
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
 import {
   Sidebar,
   SidebarContent,
@@ -38,11 +28,9 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
-import AuthButton from "../auth/AuthButton";
-
+} from '@/components/ui/sidebar';
+import Link from 'next/link';
+import AuthButton from '../auth/AuthButton';
 
 interface DashboardSideBarProps {
   data: {
@@ -53,10 +41,13 @@ interface DashboardSideBarProps {
       items: { title: string; url: string }[];
     }[];
   };
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export default function DashboardSideBar({data, children}:DashboardSideBarProps) {
+export default function DashboardSideBar({
+  data,
+  children,
+}: DashboardSideBarProps) {
   const [selectedTeam, setSelectedTeam] = React.useState(data.teams[0]);
 
   return (
@@ -131,14 +122,12 @@ export default function DashboardSideBar({data, children}:DashboardSideBarProps)
             </SidebarGroup>
           ))}
           <div className="mx-4">
-            <AuthButton/>
+            <AuthButton />
           </div>
         </SidebarContent>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
-        {children}
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }
