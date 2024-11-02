@@ -10,8 +10,11 @@ import { UserPlus, Users } from 'lucide-react';
 import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision';
 import { Input } from '@/components/ui/input';
 import CustomSeparator from '@/components/ui/customSeparator';
+import { createTeam, joinTeam } from '@/server-actions/teams';
+import { auth } from '../../../auth';
 
 export default async function OnBoarding() {
+  const session = await auth()
   return (
     <BackgroundBeamsWithCollision className="h-full min-h-screen">
       <Card className="z-[100] w-full max-w-md bg-transparent bg-opacity-10 bg-clip-padding shadow-sm backdrop-blur-sm backdrop-filter">
@@ -22,20 +25,23 @@ export default async function OnBoarding() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form>
+          <form action={createTeam}>
             <Input
-              type="number"
+              type="text"
               className="mb-4"
+              name="teamName"
               placeholder="Enter Team Name"
             />
+            <input hidden readOnly value={session?.user?.id} name="userId"/>
             <Button className="w-full transform py-6 text-lg transition-all duration-300 hover:scale-105">
               <Users className="mr-2 h-6 w-6" />
               Create a Team
             </Button>
           </form>
           <CustomSeparator text="or" />
-          <form>
-            <Input type="number" className="mb-4" placeholder="Enter team id" />
+          <form action={joinTeam}>
+            <input hidden readOnly value={session?.user?.id} name="userId"/>
+            <Input type="text" className="mb-4" name="phrase" placeholder="Enter phrase" />
             <Button className="w-full transform py-6 text-lg transition-all duration-300 hover:scale-105">
               <UserPlus className="mr-2 h-6 w-6" />
               Join a Team
