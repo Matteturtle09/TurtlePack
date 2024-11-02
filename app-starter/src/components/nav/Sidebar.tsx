@@ -31,10 +31,11 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import AuthButton from '../auth/AuthButton';
+import InviteButton from '../teams/InviteButton';
 
 interface DashboardSideBarProps {
   data: {
-    teams: string[];
+    teams: { name: string; teamId: string }[];
     navMain: {
       title: string;
       url: string;
@@ -66,7 +67,7 @@ export default function DashboardSideBar({
                       <GalleryVerticalEnd className="size-4" />
                     </div>
                     <div className="flex flex-col gap-0.5 leading-none">
-                      <span className="font-semibold">{selectedTeam}</span>
+                      <span className="font-semibold">{selectedTeam.name}</span>
                     </div>
                     <ChevronsUpDown className="ml-auto" />
                   </SidebarMenuButton>
@@ -77,10 +78,10 @@ export default function DashboardSideBar({
                 >
                   {data.teams.map((team) => (
                     <DropdownMenuItem
-                      key={team}
+                      key={team.teamId}
                       onSelect={() => setSelectedTeam(team)}
                     >
-                      {team}
+                      {team.name}
                       {team === selectedTeam && <Check className="ml-auto" />}
                     </DropdownMenuItem>
                   ))}
@@ -105,15 +106,15 @@ export default function DashboardSideBar({
           </form>
         </SidebarHeader>
         <SidebarContent>
-          {data.navMain.map((item) => (
-            <SidebarGroup key={item.title}>
-              <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+          {data.navMain.map((navItem) => (
+            <SidebarGroup key={navItem.title}>
+              <SidebarGroupLabel>{navItem.title}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {item.items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                  {navItem.items.map((subItem) => (
+                    <SidebarMenuItem key={subItem.title}>
                       <SidebarMenuButton asChild>
-                        <Link href={item.url}>{item.title}</Link>
+                        <Link href={subItem.url}>{subItem.title}</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
@@ -121,7 +122,8 @@ export default function DashboardSideBar({
               </SidebarGroupContent>
             </SidebarGroup>
           ))}
-          <div className="mx-4">
+          <div className="mx-4 flex flex-col gap-4">
+            <InviteButton teamId={selectedTeam.teamId} />
             <AuthButton />
           </div>
         </SidebarContent>

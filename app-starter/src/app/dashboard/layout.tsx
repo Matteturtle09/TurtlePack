@@ -1,6 +1,8 @@
 import DashboardSideBar from '@/components/nav/Sidebar';
 import { auth } from '../../../auth';
 import { redirect } from 'next/navigation';
+import client from '@/lib/db/mongoClient';
+import { ObjectId } from 'mongodb';
 
 export default async function DashboardLayout({
   children,
@@ -8,8 +10,23 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  if (!session?.user) {
+    redirect('/');
+  }
+
+  if (session?.user.teams.length === 0) {
+    redirect('/on-boarding');
+  }
+  const database = client.db('test');
   const data = {
-    teams: ['Acme inc.', 'My Team', 'Tasty Restaurant'],
+    teams: await Promise.all(
+      session?.user?.teams.map(async (teamId) => {
+        const team = await database
+          .collection('teams')
+          .findOne({ _id: new ObjectId(teamId) });
+        return { teamId: teamId, name: team?.name }; // Adjusting this to return only the name if that's needed
+      }),
+    ),
     navMain: [
       {
         title: 'Workflows',
@@ -41,13 +58,6 @@ export default async function DashboardLayout({
       },
     ],
   };
-  if (!session?.user) {
-    redirect('/');
-  }
-
-  if (session?.user.teams.length === 0) {
-    redirect('/on-boarding');
-  }
 
   return (
     <div className="">
