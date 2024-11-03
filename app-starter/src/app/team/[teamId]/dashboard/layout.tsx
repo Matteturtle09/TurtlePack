@@ -1,5 +1,5 @@
 import DashboardSideBar from '@/components/nav/Sidebar';
-import { auth } from '../../../auth';
+import { auth } from '../../../../../auth';
 import { redirect } from 'next/navigation';
 import client from '@/lib/db/mongoClient';
 import { ObjectId } from 'mongodb';
