@@ -1,5 +1,5 @@
 'use client';
-
+import { setCookie, getCookie } from 'cookies-next';
 import * as React from 'react';
 import {
   Check,
@@ -49,7 +49,13 @@ export default function DashboardSideBar({
   data,
   children,
 }: DashboardSideBarProps) {
-  const [selectedTeam, setSelectedTeam] = React.useState(data.teams[0]);
+  const initialTeam = getCookie('selectedTeam') ? JSON.parse(getCookie('selectedTeam')) : data.teams[0];
+  const [selectedTeam, setSelectedTeam] = React.useState(initialTeam);
+
+  React.useEffect(() => {
+    // Update the cookie whenever selectedTeam changes
+    setCookie('selectedTeam', JSON.stringify(selectedTeam), { maxAge: 60 * 60 * 24 * 7 }); // 7 days
+  }, [selectedTeam]);
 
   return (
     <SidebarProvider>
@@ -77,6 +83,7 @@ export default function DashboardSideBar({
                   align="start"
                 >
                   {data.teams.map((team) => (
+                    <Link key={team.teamId} href={`/team/${team.teamId}/dashboard/workflows`}>
                     <DropdownMenuItem
                       key={team.teamId}
                       onSelect={() => setSelectedTeam(team)}
@@ -84,6 +91,7 @@ export default function DashboardSideBar({
                       {team.name}
                       {team === selectedTeam && <Check className="ml-auto" />}
                     </DropdownMenuItem>
+                    </Link>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -114,7 +122,7 @@ export default function DashboardSideBar({
                   {navItem.items.map((subItem) => (
                     <SidebarMenuItem key={subItem.title}>
                       <SidebarMenuButton asChild>
-                        <Link href={subItem.url}>{subItem.title}</Link>
+                        <Link href={`/team/${selectedTeam.teamId}/${subItem.url}`}>{subItem.title}</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
