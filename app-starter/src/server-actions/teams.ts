@@ -1,7 +1,7 @@
 "use server"
 import client from "@/lib/db/mongoClient";
 import { ObjectId } from "mongodb";
-
+import { faker } from '@faker-js/faker';
 
 export async function joinTeam(formData: FormData) {
     const dataBase = client.db("test");
@@ -9,13 +9,14 @@ export async function joinTeam(formData: FormData) {
     const usersCol = dataBase.collection("users");
     const invitesCol = dataBase.collection("invites");
 
-    // Get user ID and token from formData and ensure they are not empty
+    // Get user ID and token/phrase from formData and ensure they are not empty
     const userId = formData.get("userId")?.toString();
     const token = formData.get("token")?.toString();
+    const phrase = formData.get("phrase")?.toString();
 
     // Check that required fields are provided
-    if (!userId || !token) {
-        throw new Error("User ID and token are required.");
+    if (!userId || (!token && !phrase)) {
+        throw new Error("User ID and either a token or phrase are required.");
     }
 
     // Find the user by ID
@@ -24,42 +25,73 @@ export async function joinTeam(formData: FormData) {
         throw new Error("User not found.");
     }
 
-    // Find the invite by token and ensure it exists
-    const invite = await invitesCol.findOne({ token });
+    // Define the query for finding the invite
+    const inviteQuery: any = {};
+    if (token) inviteQuery.token = token;
+    if (phrase) inviteQuery.phrase = phrase;
+
+    // Find the invite using token, phrase, or both
+    const invite = await invitesCol.findOne(inviteQuery);
     if (!invite || !invite.teamId) {
-        throw new Error("Invalid or expired token.");
+        throw new Error("Invalid or expired token/phrase.");
     }
 
-    // Convert teamId to a string
-    const teamId = invite.teamId.toString();
+    // Find the team by invite's teamId
+    const team = await teamsCol.findOne({ _id: invite.teamId });
+    if (!team) {
+        throw new Error("Team not found.");
+    }
 
-    // Add teamId to the user's teams array, and add userId to the team's members array
-    await usersCol.updateOne(
-        { _id: new ObjectId(userId) },
-        { $addToSet: { teams: teamId } } // Prevent duplicate entries in the array
+    // Add the user to the team
+    const result = await teamsCol.updateOne(
+        { _id: invite.teamId },
+        { $addToSet: { members: userId } }  // Ensures user is added only once
     );
-    await teamsCol.updateOne(
-        { _id: new ObjectId(teamId) },
-        { $addToSet: { members: userId } } // Prevent duplicate entries in the array
-    );
+
+    if (result.modifiedCount === 0) {
+        throw new Error("Failed to join team.");
+    }
+
+    return { success: true, message: "User successfully joined the team." };
 }
 
-export async function createTeamInvite(prevState: any ,formData: FormData){
-    const teamId = formData.get('teamId')
-    const token = formData.get('token')
-    const dataBase = client.db("test")
-    const invitesCol = dataBase.collection("invites")
+export async function createTeamInvite(prevState: any, formData: FormData) {
+    const teamId = formData.get('teamId')?.toString();
+    const token = formData.get('token')?.toString();
+    const dataBase = client.db("test");
+    const invitesCol = dataBase.collection("invites");
+
+    // Ensure there's an index on 'createdAt' for automatic expiration after 1 hour
     invitesCol.createIndex(
         { createdAt: 1 },
         { expireAfterSeconds: 3600 } // Documents will expire 1 hour after creation
-      );
-    await invitesCol.insertOne({
+    );
+
+    // Check if an invite for this team already exists
+    const existingInvite = await invitesCol.findOne({ teamId: new ObjectId(teamId) });
+    if (existingInvite) {
+        // Return the existing invite's phrase and link if found
+        return {
+            phrase: existingInvite.phrase,
+            link: `${process.env.NEXT_PUBLIC_URL}team/invite/${existingInvite.token}`
+        };
+    }
+
+    // If no existing invite, create a new one
+    const phrase = faker.commerce.productName();
+    const invite = await invitesCol.insertOne({
         teamId: new ObjectId(teamId),
         token: token,
+        phrase: phrase,
         createdAt: new Date()
-    })
-    return {phrase: "", link: `${process.env.NEXT_PUBLIC_URL}team/invite/${token}`}
+    });
+
+    return {
+        phrase: phrase,
+        link: `${process.env.NEXT_PUBLIC_URL}team/invite/${token}`
+    };
 }
+
 
 export async function createTeam(formData: FormData){
     const teamName = formData.get("teamName");
