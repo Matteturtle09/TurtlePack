@@ -11,6 +11,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
@@ -49,13 +50,18 @@ export default function DashboardSideBar({
   data,
   children,
 }: DashboardSideBarProps) {
-  const initialTeam = getCookie('selectedTeam') ? JSON.parse(getCookie('selectedTeam')) : data.teams[0];
+  const initialTeam = getCookie('selectedTeam')
+    ? JSON.parse(getCookie('selectedTeam'))
+    : data.teams[0];
   const [selectedTeam, setSelectedTeam] = React.useState(initialTeam);
 
   React.useEffect(() => {
     // Update the cookie whenever selectedTeam changes
-    setCookie('selectedTeam', JSON.stringify(selectedTeam), { maxAge: 60 * 60 * 24 * 7 }); // 7 days
+    setCookie('selectedTeam', JSON.stringify(selectedTeam), {
+      maxAge: 60 * 60 * 24 * 7,
+    }); // 7 days
   }, [selectedTeam]);
+  
 
   return (
     <SidebarProvider>
@@ -83,16 +89,23 @@ export default function DashboardSideBar({
                   align="start"
                 >
                   {data.teams.map((team) => (
-                    <Link key={team.teamId} href={`/team/${team.teamId}/dashboard/workflows`}>
-                    <DropdownMenuItem
+                    <Link
                       key={team.teamId}
-                      onSelect={() => setSelectedTeam(team)}
+                      href={`/team/${team.teamId}/dashboard/workflows`}
                     >
-                      {team.name}
-                      {team === selectedTeam && <Check className="ml-auto" />}
-                    </DropdownMenuItem>
+                      <DropdownMenuItem
+                        key={team.teamId}
+                        onSelect={() => setSelectedTeam(team)}
+                      >
+                        {team.name}
+                        {team === selectedTeam && <Check className="ml-auto" />}
+                      </DropdownMenuItem>
                     </Link>
                   ))}
+                  <DropdownMenuSeparator/>
+                  <Link href={'/on-boarding'}>
+                    <DropdownMenuItem>Add New team</DropdownMenuItem>
+                  </Link>
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
@@ -122,7 +135,11 @@ export default function DashboardSideBar({
                   {navItem.items.map((subItem) => (
                     <SidebarMenuItem key={subItem.title}>
                       <SidebarMenuButton asChild>
-                        <Link href={`/team/${selectedTeam.teamId}/${subItem.url}`}>{subItem.title}</Link>
+                        <Link
+                          href={`/team/${selectedTeam.teamId}/${subItem.url}`}
+                        >
+                          {subItem.title}
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}

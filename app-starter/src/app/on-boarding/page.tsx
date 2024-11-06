@@ -12,9 +12,13 @@ import { Input } from '@/components/ui/input';
 import CustomSeparator from '@/components/ui/customSeparator';
 import { createTeam, joinTeam } from '@/server-actions/teams';
 import { auth } from '../../../auth';
+import { redirect } from 'next/navigation';
 
 export default async function OnBoarding() {
   const session = await auth()
+  if(!session?.user){
+    redirect("/api/auth/signin")
+  }
   return (
     <BackgroundBeamsWithCollision className="h-full min-h-screen">
       <Card className="z-[100] w-full max-w-md bg-transparent bg-opacity-10 bg-clip-padding shadow-sm backdrop-blur-sm backdrop-filter">

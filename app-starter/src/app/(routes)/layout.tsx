@@ -1,15 +1,18 @@
 import Navbar from '@/components/nav/Navbar';
+import { auth } from '../../../auth';
 
-export default function RoutesLayout({
+export default async function RoutesLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const session = await auth()
+
   const navItems = [
-    { title: 'Hi', href: '#' },
     { title: 'About', href: '#about' },
     { title: 'Services', href: '#services' },
-    { title: 'Contact', href: '#contact' },
+    { title: 'Dashboard', href: `/team/${session?.user?.teams[0] ?? "1"}/dashboard/workflows` },
   ];
 
   return (
