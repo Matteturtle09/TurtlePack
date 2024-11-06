@@ -5,10 +5,13 @@ import client from '@/lib/db/mongoClient';
 import { ObjectId } from 'mongodb';
 
 export default async function DashboardLayout({
+  params,
   children,
 }: {
   children: React.ReactNode;
+  params: { teamId: string };
 }) {
+
   const session = await auth();
   if (!session?.user) {
     redirect('/');
@@ -17,6 +20,8 @@ export default async function DashboardLayout({
   if (session?.user.teams.length === 0) {
     redirect('/on-boarding');
   }
+  
+
   const database = client.db('test');
   const data = {
     teams: await Promise.all(
