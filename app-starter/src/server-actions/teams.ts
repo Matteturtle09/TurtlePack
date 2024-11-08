@@ -2,6 +2,7 @@
 import client from "@/lib/db/mongoClient";
 import { ObjectId } from "mongodb";
 import { faker } from '@faker-js/faker';
+import { revalidatePath } from "next/cache";
 
 export async function joinTeam(formData: FormData) {
     const dataBase = client.db("test");
@@ -107,4 +108,34 @@ export async function createTeam(formData: FormData){
     })
     const user = await usersCol.updateOne({_id: new ObjectId(userId)}, {$addToSet: {teams: newTeam.insertedId.toString()}})
     
+}
+
+export async function updateTeamName(formData: FormData) {
+    const teamId = formData.get("teamId")?.toString();
+    const newTeamName = formData.get("teamName")?.toString();
+    const userId = formData.get("userId")?.toString();
+    const dataBase = client.db("test");
+    const teamsCol = dataBase.collection("teams");
+    // Check if required fields are provided
+   
+
+    // Find the team by ID and ensure the user is the team admin
+    const team = await teamsCol.findOne({ _id: new ObjectId(teamId), admin: userId });
+    console.log(newTeamName)
+    if (!team) {
+        throw new Error("Team not found or you do not have permission to update this team.");
+    }
+
+    // Update the team's name
+    const result = await teamsCol.updateOne(
+        { _id: new ObjectId(teamId) },
+        { $set: { name: newTeamName } }
+    );
+
+    if (result.modifiedCount === 0) {
+        return
+    }
+    revalidatePath(`/team/${teamId}/dashboard/team-settings/`)
+
+    return { success: true, message: "Team name updated successfully." };
 }
